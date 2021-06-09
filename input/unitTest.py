@@ -1,5 +1,6 @@
 # Initial conditions for sending a single electron through the back blowout regime of Quasi3D simulation
 # useQuasi3D.py has only Mode 0 for EFields and BFields for optimal oscillation
+# These conditions should produce a betatron wavelength of ~40 c/w_p
 
 simulation_name = 'QUASI3D'
 shape = 'single'

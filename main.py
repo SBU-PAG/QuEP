@@ -114,7 +114,7 @@ if __name__ == '__main__':
         print("Number of objects:",noObj)
 
         if debugmode == True:
-            assert shape_name == 'single', "Debug mode can only be used with shape single"
+            assert shape_name == 'single', "Debug mode can only be used with shape 'single'"
         x_f, y_f, xi_f, z_f, px_f, py_f, pz_f, Debug = zip(*pool.starmap(eProbe.getTrajectory, [(x_0[i], y_0[i], xi_0[i], px_0, py_0, pz_0, t0, iter, plasma_bnds, mode, sim_name, debugmode, x_s) for i in range(0,noObj)]))
 
         pool.close()
@@ -125,8 +125,12 @@ if __name__ == '__main__':
         print("Duration: ", (time.time() - start_time)/60, " min")
 
         np.savez(fname, x_init=x_0, y_init=y_0, xi_init=xi_0, z_init=z_0, x_dat=x_f, y_dat=y_f, xi_dat=xi_f, z_dat=z_f, px_dat=px_f, py_dat=py_f, pz_dat=pz_f, t_dat=t0)
-        filehandler = open(fname[:-4]+"-DEBUG.obj", 'wb')
-        pickle.dump(Debug,filehandler)
+        
+        if debugmode == True:
+            debugname = fname[:-4]+"-DEBUG.obj"
+            filehandler = open(debugname, 'wb')
+            pickle.dump(Debug,filehandler)
+            print(f"Debug object saved to {debugname}")
 
 
 

@@ -13,6 +13,7 @@ import time
 import progressbar
 import include.movieWriter as movieWriter
 import multiprocessing as mp
+import include.simulations.useQuasi3D as sim
 
 plt.rcParams.update({'font.size': 12 })
 #plt.rcParams['animation.ffmpeg_path'] = '/ffmpeg/bin'
@@ -29,11 +30,15 @@ Viridis = True # Sequential + Perceptually Uniform
 BuPu = False # Sequential
 Jet = False
 
+t0 = sim.getTime()
+
+propspeed = sim.getPropagationSpeed()
+
 def returnXi(z):
-    return z - C * 54.3948 # Hardcoded time for Run 144!!!
+    return z - t0*propspeed
 
 def returnZ(xi):
-    return xi + C * 54.3948
+    return xi + t0*propspeed
 
 def Gamma(p):
     return np.sqrt(1.0 + p**2)
@@ -97,8 +102,8 @@ def prepare(sim_name,shape_name,noObj,rand):
     
     # For Quasi_ID = 000130, use (36,50)
     # For Quasi_ID = 000067, use (24,37)
-    zmin = 36 #36  #25#27#400
-    zmax = 50 #50  #500
+    zmin = 28 #36  #25#27#400
+    zmax = 38 #50  #500
     
     ymin = -1.0
     ymax = 1.0

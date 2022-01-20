@@ -6,6 +6,7 @@ import matplotlib.cm as cm
 import matplotlib.ticker as ticker
 import pdb
 import time
+import progressbar
 import include.simulations.useQuasi3D as sim
 
 def getFieldArrays():
@@ -24,8 +25,7 @@ def getFieldArrays():
     By = np.zeros((riter,xiiter),dtype=float)
     Bz = np.zeros((riter,xiiter),dtype=float)
 
-    for ir in range(riter):
-        print(ir)
+    for ir in progressbar.progressbar(range(riter), redirect_stout=True):
         for ixi in range(xiiter):
             #pdb.set_trace()
             Ex[ir, ixi] = sim.EField(2, raxis_1[ir], 0, xiaxis_1[ixi], raxis_1[ir])

@@ -28,7 +28,7 @@ EC = 1.60217662e-19                   # Electron charge in C
 EP_0 = 8.854187817e-12                # Vacuum permittivity in C/(V m)
 C = 299892458                         # Speed of light in vacuum in m/s
 
-Quasi_ID = '000130' #'000067' is for a0 = 4 matched density data
+Quasi_ID = '000067' #'000067' is for a0 = 4 matched density data
                     #'000130' is for 1e15 density data
                     #'000144' or '000232' are for 1e17 density data (at different times in run)
 
@@ -55,7 +55,7 @@ def getPlasDensity():
 
 def getPropagationSpeed(): 
     if (Quasi_ID == '000130'):
-        return 1.0 #THIS IS INCORRECT, JUST FOR TESTING
+        return 0.95 #THIS IS INCORRECT, JUST FOR TESTING
     elif (Quasi_ID == '000067'):
         return 0.9958959
     else:

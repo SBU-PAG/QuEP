@@ -65,7 +65,7 @@ if __name__ == '__main__':
     numberOfCores = 4#8# mp.cpu_count()
     print(f"Number of cores used for multiprocessing: {numberOfCores}")
     pool = mp.get_context('spawn').Pool(numberOfCores)
-    if (len(sys.argv) == 3):
+    if (len(sys.argv) >= 2):
         
         # Begin timing index file runtime
         start_time = time.time()
@@ -97,15 +97,18 @@ if __name__ == '__main__':
         s1 = init.s1
         s2 = init.s2
 
-        # Get initial conditions of beam
-        input_fname_2 = str(sys.argv[2])
-        print("Using beam conditions from ", input_fname_2)
-        beaminit = importlib.import_module(input_fname_2)
-        beamx_c = beaminit.beamx_c
-        beamy_c = beaminit.beamy_c
-        beamxi_c = beaminit.beamxi_c
-        sigma_x=beaminit.sigma_x
-        sigma_y=beaminit.sigma_y
+        if len(sys.argv) == 3:
+            # Get initial conditions of beam
+            input_fname_2 = str(sys.argv[2])
+            print("Using beam conditions from ", input_fname_2)
+            beaminit = importlib.import_module(input_fname_2)
+            beamx_c = beaminit.beamx_c
+            beamy_c = beaminit.beamy_c
+            beamxi_c = beaminit.beamxi_c
+            sigma_x=beaminit.sigma_x
+            sigma_y=beaminit.sigma_y
+        else:
+            print("WARNING: No gaussian weights inputted. Make sure not using weighting!")
 
         # Load data from npz file export from main.py
         data = np.load('./data/' + fname) # Change this line as needed
@@ -218,7 +221,7 @@ if __name__ == '__main__':
             findFocalY.calculate(x_0, y_0, xi_0, z_0, x_dat, y_dat, z_dat, xi_dat, px_f, py_f, pz_f, sim_name, shape_name, x_s, s1, s2)
         if (plot2DTracks):
             print("Plotting 2D Tracks...")
-            plot2D.plot(x_dat, y_dat, z_dat, xi_dat, Fx_dat, Fy_dat, Fz_dat, px_dat, py_dat, sim_name, shape_name, s1, s2, noObj)
+            plot2D.plot(x_dat, y_dat, z_dat, xi_dat, Fx_dat, Fy_dat, Fz_dat, px_dat, py_dat, sim_name, shape_name, s1, s2, noObj, fname)
         if (plot3DTracks):
             plot3D.plot(x_dat,y_dat,z_dat,xi_dat,sim_name,shape_name,s1,s2,noObj)
         if (findW):
@@ -230,7 +233,7 @@ if __name__ == '__main__':
         print("index.py - END TIME: ", curr_time_f)
         print("index.py - DURATION: ", (time.time() - start_time)/60, " min\n")
     else:
-        print("Improper number of arguments. Expected 'python3 index.py <fname> <fname>'")
+        print("Improper number of arguments. Expected 'python3 index.py <fname> *<fname>'")
         exit()
     
     pool.close()

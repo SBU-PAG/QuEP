@@ -39,8 +39,7 @@
             "program": "${workspaceFolder}/index-mp.py",
             "console": "integratedTerminal",
             "args": [
-                "input.000010_unitTest",
-                "input.weights__x_0-1__y_0-01"
+                "input.000020_unitTest-betatron"
             ]
         },
         {

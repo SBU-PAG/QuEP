@@ -106,126 +106,6 @@ def Momentum(x,y,xi,dt,px,py,pz,mode,sim_name):
     gam = Gamma(p)
     return px, py, pz, p, gam, Fx, Fy, Fz
 
-def getFullTrajectory(x_0,y_0,xi_0,px_0,py_0,pz_0,t0,iter,plasma_bnds,x_s,sim_name):
-    # Returns array of x, y, z, xi
-    if (sim_name.upper() == 'OSIRIS_CYLINSYMM'):
-        import include.simulations.useOsiCylin as sim
-    elif (sim_name.upper() == 'QUASI3D'):
-        import include.simulations.useQuasi3D as sim
-    else:
-        print("Simulation name unrecognized. Quitting...")
-        exit()
-
-    checkTimeI = True
-    checkTimeF = True
-
-    x_dat, y_dat, z_dat, xi_dat, Fx_dat, Fy_dat, Fz_dat, px_dat, py_dat = [],[],[],[],[],[],[],[],[]
-
-    t = t0                       # Start time in 1/w_p
-    dt = 0.005                   # Time step in 1/w_p
-    xn = x_0                     # Positions in c/w_p
-    yn = y_0
-    xin = xi_0
-    zn = xin + t0
-
-    px = px_0                    # Momenta in m_e c
-    py = py_0
-    pz = pz_0
-
-    # Iterate through position and time using a linear approximation
-    for i in range(0, iter):
-    # Determine new momentum and velocity from this position
-        px, py, pz, p, gam, Fx, Fy, Fz = Momentum(xn, yn, xin, dt, px, py, pz)
-
-        vxn = Velocity(px, p)
-        vyn = Velocity(py, p)
-        vzn = Velocity(pz, p)
-
-        xn += vxn * dt
-        yn += vyn * dt
-        zn += vzn * dt
-        rn = math.sqrt(xn**2 + yn**2)
-
-        t += dt
-        xin = zn - t
-
-        x_dat.append(xn)
-        y_dat.append(yn)
-        z_dat.append(zn)
-        xi_dat.append(xin)
-        Fx_dat.append(Fx)
-        Fy_dat.append(Fy)
-        Fz_dat.append(Fz)
-        px_dat.append(px)
-        py_dat.append(py)
-
-        # if (xn > -0.6 and checkTimeI):
-        #     print("Initial Time: ", t)
-        #     checkTimeI = False
-        #     #pdb.set_trace()
-        # if (xn > 0.6 and checkTimeF):
-        #     print("Final Time: ", t)
-        #     checkTimeF = False
-
-        if (abs(xn) > abs(x_s)):
-            k = i + 1
-            # Fill rest of array with the final position
-            for k in range(k, iter):
-                x_dat.append(xn)
-                y_dat.append(yn)
-                z_dat.append(zn)
-                xi_dat.append(xin)
-                Fx_dat.append(Fx)
-                Fy_dat.append(Fy)
-                Fz_dat.append(Fz)
-                px_dat.append(px)
-                py_dat.append(py)
-            return x_dat, y_dat, z_dat, xi_dat, Fx_dat, Fy_dat, Fz_dat, px_dat, py_dat, px, py, pz
-
-        # If electron leaves cell, switch to ballistic trajectory
-        if (xin < plasma_bnds[0] or xin > plasma_bnds[1] or rn > plasma_bnds[2]):
-            j = i + 1
-            j0 = j
-            dt = 1
-            for j in range(j, iter):
-                xn += vxn * dt
-                yn += vyn * dt
-                zn += vzn * dt
-                t += dt
-                xin = zn - t
-                x_dat.append(xn)
-                y_dat.append(yn)
-                z_dat.append(zn)
-                xi_dat.append(xin)
-                Fx_dat.append(Fx)
-                Fy_dat.append(Fy)
-                Fz_dat.append(Fz)
-                px_dat.append(px)
-                py_dat.append(py)
-
-                # Stop when electron passes screen
-                if (abs(xn) > abs(x_s)):
-                    k = j + 1
-                    # Fill rest of array with the final position
-                    for k in range(k, iter):
-                        x_dat.append(xn)
-                        y_dat.append(yn)
-                        z_dat.append(zn)
-                        xi_dat.append(xin)
-                        Fx_dat.append(Fx)
-                        Fy_dat.append(Fy)
-                        Fz_dat.append(Fz)
-                        px_dat.append(px)
-                        py_dat.append(py)
-                    return x_dat, y_dat, z_dat, xi_dat, Fx_dat, Fy_dat, Fz_dat, px_dat, py_dat, px, py, pz
-
-            print("Tracking quit due to more than ", iter - j0, " iterations outside plasma")
-            #print("xn = ", xn, " yn = ", yn, " zn = ", zn)
-            return x_dat, y_dat, z_dat, xi_dat, Fx_dat, Fy_dat, Fz_dat, px_dat, py_dat, px, py, pz
-
-    print("Tracking quit due to more than ", iter, " iterations in plasma")
-    return x_dat, y_dat, z_dat, xi_dat, Fx_dat, Fy_dat, Fz_dat, px_dat, py_dat, px, py, pz
-
 def getArrayForm(x_dat_, y_dat_, z_dat_, xi_dat_, Fx_dat_, Fy_dat_, Fz_dat_, px_dat_, py_dat_, iter):
     # Initialize whole trajectory arrays
     den = 1
@@ -276,12 +156,13 @@ def getTrajectory(x_0,y_0,xi_0,px_0,py_0,pz_0,t0,iter,plasma_bnds,mode,sim_name,
     py = py_0
     pz = pz_0
 
-    Debug = None
+    ### DEBUGGING ###
+    Debug = None # Create empty Debug object
     if debugmode == True: 
-        print("Using Debug Mode. Check for .obj file containing Debug output object")
+        print("Using Debug Mode...")
         x_f, y_f, xi_f, z_f, px_f, py_f, pz_f = [],[],[],[],[],[],[] # Final positions of electrons
         x_dat, y_dat, z_dat, xi_dat, Fx_dat, Fy_dat, Fz_dat, px_dat, py_dat = [],[],[],[],[],[],[],[],[]
-
+    #################
 
     # Iterate through position and time using a linear approximation
     for i in range(0, iter):
@@ -331,7 +212,7 @@ def getTrajectory(x_0,y_0,xi_0,px_0,py_0,pz_0,t0,iter,plasma_bnds,mode,sim_name,
                     yn += vyn * dt
                     zn += vzn * dt
                     t += dt
-                    xin = zn - t
+                    xin = zn - t*propspeed
                     x_dat.append(xn)
                     y_dat.append(yn)
                     z_dat.append(zn)
@@ -385,7 +266,7 @@ def getTrajectory(x_0,y_0,xi_0,px_0,py_0,pz_0,t0,iter,plasma_bnds,mode,sim_name,
                     yn += vyn * dt
                     zn += vzn * dt
                     t += dt
-                    xin = zn - t
+                    xin = zn - t*propspeed
                     x_dat.append(xn)
                     y_dat.append(yn)
                     z_dat.append(zn)
@@ -420,9 +301,11 @@ def getTrajectory(x_0,y_0,xi_0,px_0,py_0,pz_0,t0,iter,plasma_bnds,mode,sim_name,
                 Debug = DebugObject(x_dat, y_dat, z_dat, xi_dat, Fx_dat, Fy_dat, Fz_dat, px_dat, py_dat)
             return xn, yn, xin, zn, px, py, pz, Debug
 
-                #x_dat, y_dat, z_dat, xi_dat, Fx_dat, Fy_dat, Fz_dat, px_dat, py_dat = getArrayForm(x_dat, y_dat, z_dat, xi_dat, Fx_dat, Fy_dat, Fz_dat, px_dat, py_dat, iter)
-                #Debug = DebugObject(x_dat, y_dat, z_dat, xi_dat, Fx_dat, Fy_dat, Fz_dat, px_dat, py_dat)
-                #return xn, yn, xin, zn, px, py, pz, Debug
-
     print("Tracking quit due to more than ", iter, " iterations in plasma")
+    
+    if debugmode == True:
+        x_dat, y_dat, z_dat, xi_dat, Fx_dat, Fy_dat, Fz_dat, px_dat, py_dat = getArrayForm(x_dat, y_dat, z_dat, xi_dat, Fx_dat, Fy_dat, Fz_dat, px_dat, py_dat, iter)
+        Debug = DebugObject(x_dat, y_dat, z_dat, xi_dat, Fx_dat, Fy_dat, Fz_dat, px_dat, py_dat)
+        print("Debug object created...")
+
     return xn, yn, xin, zn, px, py, pz, Debug

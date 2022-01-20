@@ -26,7 +26,7 @@ def make_patch_spines_invisible(ax):
     for sp in ax.spines.values():
         sp.set_visible(False)
 
-def plot(x_dat,y_dat,z_dat,xi_dat,Fx_dat,Fy_dat,Fz_dat,px_dat,py_dat,sim_name,shape_name,s1,s2,noElec):
+def plot(x_dat,y_dat,z_dat,xi_dat,Fx_dat,Fy_dat,Fz_dat,px_dat,py_dat,sim_name,shape_name,s1,s2,noElec,fname):
 
 # 2D: Z-X, constrained to blowout regime
     fig1 = plt.figure(1)
@@ -99,4 +99,4 @@ def plot(x_dat,y_dat,z_dat,xi_dat,Fx_dat,Fy_dat,Fz_dat,px_dat,py_dat,sim_name,sh
     fig1.tight_layout()
     #fig1.show()
     fig2.tight_layout()
-    fig2.savefig("eProbe-Trajectories.png",transparent=False)
+    fig2.savefig(f"eProbe-Trajectories_{fname}.png",transparent=False)

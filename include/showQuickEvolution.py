@@ -8,7 +8,7 @@ import matplotlib.cm as cm
 import matplotlib.ticker as ticker
 import pdb
 import math
-import include.simulations.useQuasi3D as sim
+# import include.simulations.useQuasi3D as sim
 plt.rcParams.update({'font.size': 15 })
 mpl.use('Agg')
 
@@ -44,12 +44,12 @@ def getBallisticTraj(x_0,y_0,xi_0,z_0,px,py,pz,x_s):
 
     return y_f, xi_f, z_f
 
-t0 = sim.getTime()
+# t0 = sim.getTime()
 
-def returnXi(z):
+def returnXi(z,t0):
     return z - C * t0
 
-def returnZ(xi):
+def returnZ(xi,t0):
     return xi + C * t0
 
 def plot(x_f,y_f,xi_f,z_f,px_f,py_f,pz_f,sim_name,shape_name,x_s,noElec,iter):
